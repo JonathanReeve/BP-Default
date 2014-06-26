@@ -1188,6 +1188,32 @@ jq(document).ready( function() {
 		return false;
 	});
 
+	/* Marking notifications as read and unread */
+	jq("a#notification_mark_as_read, a#notification_mark_as_unread").click(function() {
+		var checkboxes_tosend = '';
+		var checkboxes = jq(".notifications tr td input[type='checkbox']");
+
+		if ( 'notification_mark_as_unread' == jq(this).attr('id') ) {
+			var action = 'notifications_markunread';
+		} else {
+			var action = 'notifications_markread';
+		}
+
+		checkboxes.each( function(i) {
+			if(jq(this).is(':checked')) {
+				checkboxes_tosend += jq(this).attr('value');
+				if ( i != checkboxes.length - 1 ) {
+					checkboxes_tosend += ','
+				}
+			}
+		});
+		jq.post( ajaxurl, {
+			action: action,
+			'thread_ids': checkboxes_tosend
+		});
+		return false;
+	});
+
 	/* Selecting unread and read messages in inbox */
 	jq( 'body.messages #item-body div.messages' ).on( 'change', '#message-type-select', function() {
 		var selection = this.value;
@@ -1215,6 +1241,28 @@ jq(document).ready( function() {
 		});
 	});
 	
+	/* Selecting notifications in inbox */
+	jq( 'body.notifications #item-body div.notifications-options-nav' ).on( 'change', '#notification-type-select', function() {
+
+		var selection = this.value;
+		var checkboxes = jq( "td input[type='checkbox']" );
+
+		checkboxes.each( function(i) {
+			checkboxes[i].checked = "";
+		});
+
+		var checked_value = "checked";
+		switch ( selection ) {
+			case '' :
+				checked_value = "";
+				break;
+		}
+
+		checkboxes.each( function(i) {
+			checkboxes[i].checked = checked_value;
+		});
+	});
+
 	/* Bulk delete messages */
 	jq( 'body.messages #item-body div.messages' ).on( 'click', '.messages-options-nav a', function() {
 		if ( -1 == jq.inArray( this.id ), Array( 'delete_sentbox_messages', 'delete_inbox_messages' ) ) {

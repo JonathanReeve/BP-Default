@@ -62,6 +62,10 @@ function bp_dtheme_register_actions() {
 		'messages_markread'             => 'bp_dtheme_ajax_message_markread',
 		'messages_markunread'           => 'bp_dtheme_ajax_message_markunread',
 		'messages_send_reply'           => 'bp_dtheme_ajax_messages_send_reply',
+
+		// Notifications
+		'notifications_markread'        => 'bp_dtheme_ajax_notification_markread',
+		'notifications_markunread'      => 'bp_dtheme_ajax_notification_markunread',
 	);
 
 	/**
@@ -996,3 +1000,54 @@ function bp_dtheme_ajax_messages_autocomplete_results() {
 
 	exit;
 }
+/**
+ * Mark a private notification as unread via a POST request.
+ *
+ * @return mixed String on error, void on success
+ * @since BuddyPress (2.0)
+ */
+function bp_dtheme_ajax_notification_markunread() {
+	// Bail if not a POST action
+	if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) )
+		return;
+
+	if ( ! isset($_POST['thread_ids']) ) {
+		echo "-1<div id='message' class='error'><p>" . __( 'There was a problem marking messages as unread.', 'buddypress' ) . '</p></div>';
+
+	} else {
+		$thread_ids = explode( ',', $_POST['thread_ids'] );
+
+		for ( $i = 0, $count = count( $thread_ids ); $i < $count; ++$i ) {
+			//BP_Messages_Thread::mark_as_unread( (int) $thread_ids[$i] );
+			BP_Notifications_Notification::mark_all_for_user( (int) $thread_ids[$i] ); 
+		}
+	}
+
+	exit;
+}
+
+/**
+ * Mark a private notification as read via a POST request.
+ *
+ * @return mixed String on error, void on success
+ * @since BuddyPress (2.0)
+ */
+function bp_dtheme_ajax_notification_markread() {
+	// Bail if not a POST action
+	if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) )
+		return;
+
+	if ( ! isset($_POST['thread_ids']) ) {
+		echo "-1<div id='message' class='error'><p>" . __('There was a problem marking messages as read.', 'buddypress' ) . '</p></div>';
+
+	} else {
+		$thread_ids = explode( ',', $_POST['thread_ids'] );
+
+		for ( $i = 0, $count = count( $thread_ids ); $i < $count; ++$i ) {
+			BP_Messages_Thread::mark_as_read( (int) $thread_ids[$i] );
+		}
+	}
+
+	exit;
+}
+

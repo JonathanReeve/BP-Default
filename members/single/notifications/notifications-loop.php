@@ -23,3 +23,7 @@
 
 	</tbody>
 </table>
+
+<div class="notifications-options-nav">
+	<?php bp_notifications_options(); ?> 
+</div> <!-- .notifications-options-nav --> 
