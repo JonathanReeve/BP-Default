@@ -1017,9 +1017,11 @@ function bp_dtheme_ajax_notification_markunread() {
 	} else {
 		$thread_ids = explode( ',', $_POST['thread_ids'] );
 
+		$user_id = get_current_user_id(); 
+	        $is_new = 0; //unread	
 		for ( $i = 0, $count = count( $thread_ids ); $i < $count; ++$i ) {
 			//BP_Messages_Thread::mark_as_unread( (int) $thread_ids[$i] );
-			BP_Notifications_Notification::mark_all_for_user( (int) $thread_ids[$i] ); 
+			BP_Notifications_Notification::mark_all_for_user( $user_id, $is_new, (int) $thread_ids[$i] ); 
 		}
 	}
 
@@ -1043,8 +1045,14 @@ function bp_dtheme_ajax_notification_markread() {
 	} else {
 		$thread_ids = explode( ',', $_POST['thread_ids'] );
 
+		$user_id = get_current_user_id(); 
+	        $is_new = 1; //unread	
+
 		for ( $i = 0, $count = count( $thread_ids ); $i < $count; ++$i ) {
-			BP_Messages_Thread::mark_as_read( (int) $thread_ids[$i] );
+			//BP_Messages_Thread::mark_as_read( (int) $thread_ids[$i] );
+			BP_Notifications_Notification::mark_all_for_user( $user_id, $is_new, (int) $thread_ids[$i] ); 
+			_log("Marking as read: "); 
+			_log($thread_ids[$i]); 
 		}
 	}
 
